@@ -1,0 +1,24 @@
+List networks:
+curl http://localhost:9696/v2.0/networks
+
+Show network:
+curl http://localhost:9696/v2.0/networks/375829ed-b091-41ef-a69d-e66052366a69
+
+Add network:
+curl -g -i -X POST http://localhost:9696/v2.0/networks -H "Content-Type: application/json" -H "Accept: application/json" -d '{"network": {"name": "jeff"}}' 
+
+Delete network:
+curl -X DELETE http://localhost:9696/v2.0/networks/375829ed-b091-41ef-a69d-e66052366a69
+
+
+List subnets:
+curl http://localhost:9696/v2.0/subnets
+
+Show subnet:
+curl http://localhost:9696/v2.0/subnets/7ab03a45-7b06-485f-8748-282e248bcdd0
+
+Add subnet:
+curl -g -i -X POST http://localhost:9696/v2.0/subnets -H "Content-Type: application/json" -H "Accept: application/json" -d '{"subnet": {"name": "jeff"}}' 
+
+Delete subnet:
+curl -X DELETE http://localhost:9696/v2.0/subnets/7ab03a45-7b06-485f-8748-282e248bcdd0
