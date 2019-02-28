@@ -20,9 +20,9 @@ from __future__ import absolute_import
 import json
 import time
 
-from neutron_data import networks
+#from neutron_data import networks
 from neutron_data import ports
-from neutron_data import subnets
+#from neutron_data import subnets
 from vnc_creds import vnc_creds
 from vnc_api import vnc_api
 
@@ -79,14 +79,14 @@ def show_network(content, id=None):
 
 @rest(SHOW, PORTS)
 def show_port(content, id=None):
-        port = ports[id]
-        return json.dumps({'port': port})
+    port = ports[id]
+    return json.dumps({'port': port})
 
 
 @rest(SHOW, SUBNETS)
 def show_subnet(content, id):
-        subnet = subnets[id]
-        return json.dumps({'subnet': subnet})
+    subnet = vnc().subnet_read(id = id)
+    return json.dumps({'subnet': {'id': subnet.uuid, 'name': subnet.fq_name[0]}})
 
 
 @rest(GET, '')
@@ -118,8 +118,8 @@ def get_ports(content, id):
 @rest(GET, SUBNETS)
 def get_subnets(content, id):
     response_subnets = []
-    for subnet in subnets.itervalues():
-        response_subnets.append(subnet)
+    for subnet in vnc().subnets_list()['subnets']:
+        response_subnets.append({'id': subnet['uuid'], 'name': subnet['fq_name'][0]})
 
     return json.dumps({
         "subnets": response_subnets
@@ -142,8 +142,7 @@ def delete_port(content=None, id=None):
 @rest(DELETE, SUBNETS)
 def delete_subnet(content, id):
     if id is not None:
-        if id in subnets:
-            del(subnets[id])
+        vnc().subnet_delete(id = id)
 
 
 @rest(POST, NETWORKS)
@@ -178,8 +177,8 @@ def post_networks(content, id):
 #        network['provider:segmentation_id'] = received_network['provider:segmentation_id']
 
     print "UPDATE NETWORK:" + str(network)
-    vn_obj = vnc_api.VirtualNetwork(network['name'])
-    id = vnc().virtual_network_create(vn_obj)
+    obj = vnc_api.VirtualNetwork(network['name'])
+    id = vnc().virtual_network_create(obj)
     return json.dumps({'network': {'id': id, 'name': network['name']}})
 
 
@@ -217,24 +216,23 @@ def post_subnets(content, id):
     received_subnet = content_json['subnet']
     subnet = dict()
 
-    # generate some new id for the subnet
-    subnet_id = 'subnet_id_' + generate_id()
-
-    # only copy the relevant keys, fail if any of them is missing
-    subnet['id'] = subnet_id
+#    # generate some new id for the subnet
+#    subnet_id = 'subnet_id_' + generate_id()
+#
+#    # only copy the relevant keys, fail if any of them is missing
+#    subnet['id'] = subnet_id
     subnet['name'] = received_subnet['name']
-    subnet['network_id'] = received_subnet['network_id']
-    subnet['cidr'] = received_subnet['cidr']
-
-    #update_field_if_present(subnet, received_subnet, 'ip_version')
-    #update_field_if_present(subnet, received_subnet, 'gateway_ip')
-    #update_field_if_present(subnet, received_subnet, 'dns_nameservers')
+#    subnet['network_id'] = received_subnet['network_id']
+#    subnet['cidr'] = received_subnet['cidr']
+#
+#    #update_field_if_present(subnet, received_subnet, 'ip_version')
+#    #update_field_if_present(subnet, received_subnet, 'gateway_ip')
+#    #update_field_if_present(subnet, received_subnet, 'dns_nameservers')
 
     print "UPDATE SUBNET:" + str(subnet)
-
-    subnets[subnet_id] = subnet
-
-    return json.dumps({'subnet': subnet})
+    obj = vnc_api.Subnet(subnet['name'])
+    id = vnc().subnet_create(obj)
+    return json.dumps({'subnet': {'id': id, 'name': subnet['name']}})
 
 
 @rest(PUT, PORTS)
