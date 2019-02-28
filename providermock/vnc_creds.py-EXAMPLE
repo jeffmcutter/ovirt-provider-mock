@@ -1,0 +1,13 @@
+'''
+
+Login credentials for vnc_api.
+
+'''
+
+vnc_creds = {
+    'api_server_host': '10.0.0.1',
+    'auth_host': '10.0.0.1',
+    'username': 'admin',
+    'password': 'passw0rd',
+    'tenant_name': 'admin'
+}
