@@ -217,9 +217,9 @@ def post_subnets(content, id):
     subnet['network_id'] = received_subnet['network_id']
     subnet['cidr'] = received_subnet['cidr']
 
-    update_field_if_present(subnet, received_subnet, 'ip_version')
-    update_field_if_present(subnet, received_subnet, 'gateway_ip')
-    update_field_if_present(subnet, received_subnet, 'dns_nameservers')
+    #update_field_if_present(subnet, received_subnet, 'ip_version')
+    #update_field_if_present(subnet, received_subnet, 'gateway_ip')
+    #update_field_if_present(subnet, received_subnet, 'dns_nameservers')
 
     print "UPDATE SUBNET:" + str(subnet)
 
@@ -241,13 +241,13 @@ def put_ports(content, id):
     port = ports[port_id]
 
     # only copy the relevant keys, fail if any of them is missing
-    update_field_if_present(port, received_port, 'name')
-    update_field_if_present(port, received_port, 'network_id')
-    update_field_if_present(port, received_port, 'device_id')
-    update_field_if_present(port, received_port, 'mac_address')
-    update_field_if_present(port, received_port, 'device_owner')
-    update_field_if_present(port, received_port, 'admin_state_up')
-    update_field_if_present(port, received_port, 'binding:host_id')
+    #update_field_if_present(port, received_port, 'name')
+    #update_field_if_present(port, received_port, 'network_id')
+    #update_field_if_present(port, received_port, 'device_id')
+    #update_field_if_present(port, received_port, 'mac_address')
+    #update_field_if_present(port, received_port, 'device_owner')
+    #update_field_if_present(port, received_port, 'admin_state_up')
+    #update_field_if_present(port, received_port, 'binding:host_id')
 
     print "PUT PORT:" + str(port)
     # ports[port_id] = port
