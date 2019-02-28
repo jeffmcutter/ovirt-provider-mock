@@ -40,14 +40,14 @@ SUBNETS = 'subnets'
 _responses = {}
 
 
-def get_vnc(vnc_creds):
-    vnc = vnc_api.VncApi(
+def vnc():
+    vnclib = vnc_api.VncApi(
         api_server_host = vnc_creds['api_server_host'],
         auth_host = vnc_creds['auth_host'],
         username = vnc_creds['username'],
         password = vnc_creds['password'],
         tenant_name = vnc_creds['tenant_name'])
-    return vnc
+    return vnclib
 
 def rest(method, path):
     """
@@ -95,16 +95,14 @@ def get_default(content, id):
 
 
 @rest(GET, NETWORKS)
-def get_networks(conten, id):
+def get_networks(content, id):
     response_networks = []
-    for network in networks.itervalues():
-        response_networks.append(network)
+    for network in vnc().virtual_networks_list()['virtual-networks']:
+        response_networks.append({'id': network['uuid'], 'name': network['fq_name'][2]})
 
     return json.dumps({
         "networks": response_networks
     })
-
-
 
 @rest(GET, PORTS)
 def get_ports(content, id):
