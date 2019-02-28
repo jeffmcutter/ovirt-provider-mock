@@ -23,6 +23,8 @@ import time
 from neutron_data import networks
 from neutron_data import ports
 from neutron_data import subnets
+from vnc_creds import vnc_creds
+from vnc_api import vnc_api
 
 GET = 'GET'  # list of entities
 SHOW = 'SHOW'  # concrete entity
@@ -37,6 +39,15 @@ SUBNETS = 'subnets'
 
 _responses = {}
 
+
+def get_vnc(vnc_creds):
+    vnc = vnc_api.VncApi(
+        api_server_host = vnc_creds['api_server_host'],
+        auth_host = vnc_creds['auth_host'],
+        username = vnc_creds['username'],
+        password = vnc_creds['password'],
+        tenant_name = vnc_creds['tenant_name'])
+    return vnc
 
 def rest(method, path):
     """
