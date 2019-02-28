@@ -73,8 +73,8 @@ def generate_id():
 
 @rest(SHOW, NETWORKS)
 def show_network(content, id=None):
-        network = networks[id]
-        return json.dumps({'network': network})
+    network = vnc().virtual_network_read(id = id)
+    return json.dumps({'network': {'id': network.uuid, 'name': network.fq_name[2]}})
 
 
 @rest(SHOW, PORTS)
