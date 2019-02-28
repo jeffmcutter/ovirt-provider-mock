@@ -5,16 +5,16 @@ Entity data for the current mock sessions
 '''
 
 # id: network
-networks = {
-    'network_id_1': {
-        'id': 'network_id_1',
-        'name': 'public'
-    },
-    'network_id_2': {
-        'id': 'network_id_2',
-        'name': 'private'
-    },
-}
+#networks = {
+#    'network_id_1': {
+#        'id': 'network_id_1',
+#        'name': 'public'
+#    },
+#    'network_id_2': {
+#        'id': 'network_id_2',
+#        'name': 'private'
+#    },
+#}
 
 subnets = {
     'subnet_id_1': {
