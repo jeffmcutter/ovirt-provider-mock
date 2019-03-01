@@ -21,7 +21,7 @@ import json
 import time
 
 #from neutron_data import networks
-from neutron_data import ports
+#from neutron_data import ports
 #from neutron_data import subnets
 from vnc_creds import vnc_creds
 from vnc_api import vnc_api
@@ -74,19 +74,19 @@ def generate_id():
 @rest(SHOW, NETWORKS)
 def show_network(content, id=None):
     network = vnc().virtual_network_read(id = id)
-    return json.dumps({'network': {'id': network.uuid, 'name': network.fq_name[2]}})
+    return json.dumps({'network': {'id': network.uuid, 'name': network.name}})
 
 
 @rest(SHOW, PORTS)
 def show_port(content, id=None):
-    port = ports[id]
-    return json.dumps({'port': port})
+    port = vnc().virtual_machine_interface_read(id = id)
+    return json.dumps({'port': {'id': port.uuid, 'name': port.name}})
 
 
 @rest(SHOW, SUBNETS)
 def show_subnet(content, id):
     subnet = vnc().subnet_read(id = id)
-    return json.dumps({'subnet': {'id': subnet.uuid, 'name': subnet.fq_name[0]}})
+    return json.dumps({'subnet': {'id': subnet.uuid, 'name': subnet.name}})
 
 
 @rest(GET, '')
@@ -99,20 +99,14 @@ def get_networks(content, id):
     response_networks = []
     for network in vnc().virtual_networks_list()['virtual-networks']:
         response_networks.append({'id': network['uuid'], 'name': network['fq_name'][2]})
-
-    return json.dumps({
-        "networks": response_networks
-    })
+    return json.dumps({"networks": response_networks})
 
 @rest(GET, PORTS)
 def get_ports(content, id):
     response_ports = []
-    for port in ports.itervalues():
-        response_ports.append(port)
-
-    return json.dumps({
-        "ports": response_ports
-    })
+    for port in vnc().virtual_machine_interfaces_list()['virtual-machine-interfaces']:
+        response_ports.append({'id': port['uuid'], 'name': port['fq_name'][2]})
+    return json.dumps({"ports": response_ports})
 
 
 @rest(GET, SUBNETS)
@@ -120,10 +114,7 @@ def get_subnets(content, id):
     response_subnets = []
     for subnet in vnc().subnets_list()['subnets']:
         response_subnets.append({'id': subnet['uuid'], 'name': subnet['fq_name'][0]})
-
-    return json.dumps({
-        "subnets": response_subnets
-    })
+    return json.dumps({"subnets": response_subnets})
 
 
 @rest(DELETE, NETWORKS)
@@ -135,9 +126,7 @@ def delete_network(content=None, id=None):
 @rest(DELETE, PORTS)
 def delete_port(content=None, id=None):
     if id is not None:
-        if id in ports:
-            del(ports[id])
-
+        vnc().virtual_machine_interface_delete(id = id)
 
 @rest(DELETE, SUBNETS)
 def delete_subnet(content, id):
@@ -178,35 +167,35 @@ def post_networks(content, id):
 
     print "UPDATE NETWORK:" + str(network)
     obj = vnc_api.VirtualNetwork(network['name'])
-    id = vnc().virtual_network_create(obj)
-    return json.dumps({'network': {'id': id, 'name': network['name']}})
+    network['id'] = vnc().virtual_network_create(obj)
+    return json.dumps({'network': network})
 
 
 @rest(POST, PORTS)
 def post_ports(content, id):
     content_json = json.loads(content)
-
     received_port = content_json['port']
     port = dict()
 
-    #  The port id 'id' will be passed to the VIF driver as "vnic_id"
-    if getattr(received_port, 'id', None):  # existing port is updated
-        port_id = received_port['id']
-    else:  # if port has no id, create a new one
-        port_id = 'port_id_' + generate_id()
-
-    # only copy the relevant keys, fail if any of them is missing
-    port['id'] = port_id
+#    #  The port id 'id' will be passed to the VIF driver as "vnic_id"
+#    if getattr(received_port, 'id', None):  # existing port is updated
+#        port_id = received_port['id']
+#    else:  # if port has no id, create a new one
+#        port_id = 'port_id_' + generate_id()
+#
+#    # only copy the relevant keys, fail if any of them is missing
+#    port['id'] = port_id
     port['name'] = received_port['name']  # vm nic name (eg. ens3)
-    port['network_id'] = received_port['network_id']  # external network id
-    port['device_id'] = received_port['device_id']  # vm nic id
-    port['mac_address'] = received_port['mac_address']  # vm nic mac
-    port['device_owner'] = received_port['device_owner']  # always 'oVirt'
-    port['admin_state_up'] = received_port['admin_state_up']
-    port['binding:host_id'] = received_port['binding:host_id']
+#    port['network_id'] = received_port['network_id']  # external network id
+#    port['device_id'] = received_port['device_id']  # vm nic id
+#    port['mac_address'] = received_port['mac_address']  # vm nic mac
+#    port['device_owner'] = received_port['device_owner']  # always 'oVirt'
+#    port['admin_state_up'] = received_port['admin_state_up']
+#    port['binding:host_id'] = received_port['binding:host_id']
 
     print "UPDATE PORT:" + str(port)
-    ports[port_id] = port
+    obj = vnc_api.VirtualMachineInterface(port['name'])
+    port['id'] = vnc().virtual_machine_interface_create(obj)
     return json.dumps({'port': port})
 
 
@@ -231,8 +220,8 @@ def post_subnets(content, id):
 
     print "UPDATE SUBNET:" + str(subnet)
     obj = vnc_api.Subnet(subnet['name'])
-    id = vnc().subnet_create(obj)
-    return json.dumps({'subnet': {'id': id, 'name': subnet['name']}})
+    subnet['id'] = vnc().subnet_create(obj)
+    return json.dumps({'subnet': subnet})
 
 
 @rest(PUT, PORTS)
@@ -261,22 +250,22 @@ def put_ports(content, id):
     return json.dumps({'port': port})
 
 
-@rest(GET, 'tech')
-def get_debug(content, id):
-    result = 'DEBUG DUMP\n\n\n'
-
-    result += 'NETWORKS:\n\n'
-    result += json.dumps(networks)
-
-    result += '\n\n'
-    result += 'SUBNETS:\n\n'
-    result += json.dumps(subnets)
-
-    result += '\n\n'
-    result += 'PORTS:\n\n'
-    result += json.dumps(ports)
-
-    return result
+#@rest(GET, 'tech')
+#def get_debug(content, id):
+#    result = 'DEBUG DUMP\n\n\n'
+#
+#    result += 'NETWORKS:\n\n'
+#    result += json.dumps(networks)
+#
+#    result += '\n\n'
+#    result += 'SUBNETS:\n\n'
+#    result += json.dumps(subnets)
+#
+#    result += '\n\n'
+#    result += 'PORTS:\n\n'
+#    result += json.dumps(ports)
+#
+#    return result
 
 
 def responses():
