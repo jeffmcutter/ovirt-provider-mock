@@ -308,6 +308,23 @@ CREATE NETWORK
 --------------
 
 No specifics given in presentation.
+
+Collected by creating a network against the mock provider using RHV-M:
+
+DEBUG:Request: POST : /v2.0/networks
+DEBUG:Request body:
+{
+  "network" : {
+    "name" : "test_create_net_1",
+    "admin_state_up" : true,
+    "tenant_id" : "oVirt"
+  }
+}
+UPDATE NETWORK:{'tenant_id': u'oVirt', 'admin_state_up': True, 'id': 'network_id_1551728885', 'name': u'test_create_net_1'}
+192.168.122.23 - - [04/Mar/2019 14:48:05] "POST /v2.0/networks HTTP/1.1" 200 -
+DEBUG:Response code: 200
+DEBUG:Response body: {"network": {"tenant_id": "oVirt", "admin_state_up": true, "id": "network_id_1551728885", "name": "test_create_net_1"}}
+
 '''
 
 @rest(POST, NETWORKS)
@@ -404,6 +421,42 @@ Body (with sample values):
         "mac_address": "00:1a:4a:16:01:53"
     }
 }
+
+Collected by creating a port against the mock provider using RHV-M:
+
+DEBUG:Request: GET : /v2.0/ports
+127.0.0.1 - - [04/Mar/2019 18:20:30] "GET /v2.0/ports HTTP/1.1" 200 -
+DEBUG:Response code: 200
+DEBUG:Response body: {"ports": [{"device_owner": "oVirt", "binding:host_id": "binding_host_id", "name": "dummy port", "mac_address": "00:00:00:00:00:00", "network_id": "network_id_1", "admin_state_up": true, "id": "port_id_1", "device_id": "dummy port"}, {"binding:host_id": "rhvh1.example.com", "name": "nic1", "admin_state_up": true, "network_id": "network_id_2", "device_owner": "oVirt", "mac_address": "00:1a:4a:16:01:51", "id": "port_id_1551739049", "device_id": "202a6d03-0926-491e-82f7-d6834e3a6bdf"}]}
+DEBUG:Request: PUT : /v2.0/ports/port_id_1551739049
+DEBUG:Request body:
+{
+  "port" : {
+    "security_groups" : null
+  }
+}
+PUT PORT:{'binding:host_id': u'rhvh1.example.com', 'name': u'nic1', 'admin_state_up': True, 'network_id': u'network_id_2', 'device_owner': u'oVirt', 'mac_address': u'00:1a:4a:16:01:51', 'id': 'port_id_1551739049', 'device_id': u'202a6d03-0926-491e-82f7-d6834e3a6bdf'}
+127.0.0.1 - - [04/Mar/2019 18:20:30] "PUT /v2.0/ports/port_id_1551739049 HTTP/1.1" 200 -
+DEBUG:Response code: 200
+DEBUG:Response body: {"port": {"binding:host_id": "rhvh1.example.com", "name": "nic1", "admin_state_up": true, "network_id": "network_id_2", "device_owner": "oVirt", "mac_address": "00:1a:4a:16:01:51", "id": "port_id_1551739049", "device_id": "202a6d03-0926-491e-82f7-d6834e3a6bdf"}}
+DEBUG:Request: GET : /v2.0/ports
+127.0.0.1 - - [04/Mar/2019 18:20:34] "GET /v2.0/ports HTTP/1.1" 200 -
+DEBUG:Response code: 200
+DEBUG:Response body: {"ports": [{"device_owner": "oVirt", "binding:host_id": "binding_host_id", "name": "dummy port", "mac_address": "00:00:00:00:00:00", "network_id": "network_id_1", "admin_state_up": true, "id": "port_id_1", "device_id": "dummy port"}, {"binding:host_id": "rhvh1.example.com", "name": "nic1", "admin_state_up": true, "network_id": "network_id_2", "device_owner": "oVirt", "mac_address": "00:1a:4a:16:01:51", "id": "port_id_1551739049", "device_id": "202a6d03-0926-491e-82f7-d6834e3a6bdf"}]}
+DEBUG:Request: PUT : /v2.0/ports/port_id_1551739049
+DEBUG:Request body:
+{
+  "port" : {
+    "binding:host_id" : "rhvh2.example.com",
+    "mac_address" : "00:1a:4a:16:01:51",
+    "security_groups" : null
+  }
+}
+PUT PORT:{'binding:host_id': u'rhvh1.example.com', 'name': u'nic1', 'admin_state_up': True, 'network_id': u'network_id_2', 'device_owner': u'oVirt', 'mac_address': u'00:1a:4a:16:01:51', 'id': 'port_id_1551739049', 'device_id': u'202a6d03-0926-491e-82f7-d6834e3a6bdf'}
+127.0.0.1 - - [04/Mar/2019 18:20:34] "PUT /v2.0/ports/port_id_1551739049 HTTP/1.1" 200 -
+DEBUG:Response code: 200
+DEBUG:Response body: {"port": {"binding:host_id": "rhvh1.example.com", "name": "nic1", "admin_state_up": true, "network_id": "network_id_2", "device_owner": "oVirt", "mac_address": "00:1a:4a:16:01:51", "id": "port_id_1551739049", "device_id": "202a6d03-0926-491e-82f7-d6834e3a6bdf"}}
+
 '''
 
 @rest(POST, PORTS)
@@ -481,6 +534,32 @@ Body (with sample values):
         "subnetpool_id": null
     }
 }
+
+Collected by creating a network against the mock provider using RHV-M:
+
+DEBUG:Request: SHOW : /v2.0/networks/network_id_1551728885
+192.168.122.23 - - [04/Mar/2019 14:51:51] "GET /v2.0/networks/network_id_1551728885 HTTP/1.1" 200 -
+DEBUG:Response code: 200
+DEBUG:Response body: {"network": {"tenant_id": "oVirt", "admin_state_up": true, "id": "network_id_1551728885", "name": "test_create_net_1"}}
+DEBUG:Request: POST : /v2.0/subnets
+DEBUG:Request body:
+{
+  "subnet" : {
+    "name" : "test_create_subnet_1",
+    "cidr" : "192.168.0.0/24",
+    "enable_dhcp" : true,
+    "network_id" : "network_id_1551728885",
+    "tenant_id" : "oVirt",
+    "dns_nameservers" : [ "192.168.0.1" ],
+    "ip_version" : 4,
+    "gateway_ip" : "192.168.0.1"
+  }
+}
+UPDATE SUBNET:{'network_id': u'network_id_1551728885', 'cidr': u'192.168.0.0/24', 'id': 'subnet_id_1551729111', 'name': u'test_create_subnet_1'}
+192.168.122.23 - - [04/Mar/2019 14:51:51] "POST /v2.0/subnets HTTP/1.1" 200 -
+DEBUG:Response code: 200
+DEBUG:Response body: {"subnet": {"network_id": "network_id_1551728885", "cidr": "192.168.0.0/24", "id": "subnet_id_1551729111", "name": "test_create_subnet_1"}}
+
 '''
 
 @rest(POST, SUBNETS)
