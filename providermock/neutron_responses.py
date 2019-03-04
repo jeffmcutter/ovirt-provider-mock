@@ -94,12 +94,99 @@ def get_default(content, id):
     return json.dumps({})
 
 
+'''
+-------------
+NETWORKS LIST
+-------------
+
+Query from ovirt engine:
+GET: http://<host>:<port – default:9696>/v2.0/networks
+Headers: 
+ 	Accept=application/json 
+ 	X-Auth-Token=<token from authentication request>
+
+Minimal response from provider:
+Response code: 200
+Required headers: "Content-Type", "Application/json"
+Body (with sample values):
+    "networks": [
+        {
+            "status": "ACTIVE", 
+            "subnets": ["dc594048-a9e2-4ec9-9928-4157cea7e530"], 
+            "name": "public", 
+            "provider:physical_network": null, 
+            "admin_state_up": true, 
+            "tenant_id": "547deac3d7f64e2688de188365a139aa", 
+            "mtu": 0, 
+            "router:external": true, 
+            "shared": false, 
+            "provider:network_type": "vxlan", 
+            "id": "bf864bf3-81d8-438d-bf68-4b0c357309b3", 
+            "provider:segmentation_id": 35
+        },
+ 	{ … }
+}
+'''
+
 @rest(GET, NETWORKS)
 def get_networks(content, id):
     response_networks = []
     for network in vnc().virtual_networks_list()['virtual-networks']:
         response_networks.append({'id': network['uuid'], 'name': network['fq_name'][2]})
     return json.dumps({"networks": response_networks})
+
+
+'''
+----------
+PORTS LIST
+----------
+
+Query from ovirt engine:
+GET: http://<host>:<port – default:9696>/v2.0/ports
+Headers: 
+ 	Accept=application/json 
+ 	X-Auth-Token=<token from authentication request>
+
+Minimal response from provider:
+Response code: 200
+Required headers: "Content-Type", "Application/json"
+Body (with sample values):
+    {"ports":
+ [
+   {
+    "status": "DOWN",
+    "binding:host_id": "192.168.120.18-1ebb72",
+    "allowed_address_pairs": [],
+    "extra_dhcp_opts": [],
+    "dns_assignment": [
+       {
+        "hostname": "host-172-24-4-227",
+        "ip_address": "172.24.4.227",
+        "fqdn": "host-172-24-4-227.openstacklocal."
+       }
+       ],
+    "device_owner": "oVirt",
+    "binding:profile": {},
+    "fixed_ips": [
+       {
+        "subnet_id": "dc594048-a9e2-4ec9-9928-4157cea7e530",
+        "ip_address": "172.24.4.227"
+       }],
+    "id": "49ccb785-eadb-469d-8c33-e7bc87d37e4e",
+    "security_groups": ["9cca3bc4-416c-4815-b3d7-4ee81ab8bb97"],
+    "device_id": "5cc10431-0b25-41bd-941c-3a1aed8edd87",
+    "name": "nic5",
+    "admin_state_up": true,
+    "network_id": "bf864bf3-81d8-438d-bf68-4b0c357309b3",
+    "dns_name": "",
+    "binding:vif_details": {},
+    "binding:vnic_type": "normal",
+    "binding:vif_type": "binding_failed",
+    "tenant_id": "547deac3d7f64e2688de188365a139aa",
+    "mac_address": "00:1a:4a:16:01:59"
+  }]
+}
+'''
 
 @rest(GET, PORTS)
 def get_ports(content, id):
@@ -109,6 +196,70 @@ def get_ports(content, id):
     return json.dumps({"ports": response_ports})
 
 
+'''
+------------
+SUBNETS LIST
+------------
+
+Query from ovirt engine:
+GET: http://<host>:<port – default:9696>/v2.0/subnets
+Headers: 
+ 	Accept=application/json 
+ 	X-Auth-Token=<token from authentication request>
+
+Minimal response from provider:
+Response code: 200
+Required headers: "Content-Type", "Application/json"
+Body (with sample values):
+{"subnets":
+[
+    {
+        "name": "private_subnet",
+        "enable_dhcp": true,
+        "network_id": "59b48a4c-893c-47d2-9df3-84102329bbb9",
+        "tenant_id": "472beee27f704a5b8a6f3a15fdac7ba5",
+        "dns_nameservers": [],
+        "gateway_ip": "10.0.0.1",
+        "ipv6_ra_mode": null,
+        "allocation_pools":
+        [
+            {
+                "start": "10.0.0.2",
+                "end": "10.0.0.254"
+            }
+        ],
+        "host_routes": [],
+        "ip_version": 4,
+        "ipv6_address_mode": null,
+        "cidr": "10.0.0.0/24",
+        "id": "6ed90628-5d9c-4eae-8665-0b2420e683d4",
+        "subnetpool_id": null
+    },
+    {
+        "name": "public_subnet",
+        "enable_dhcp": false,
+        "network_id": "bf864bf3-81d8-438d-bf68-4b0c357309b3",
+        "tenant_id": "547deac3d7f64e2688de188365a139aa",
+        "dns_nameservers": [],
+        "gateway_ip": "172.24.4.225",
+        "ipv6_ra_mode": null,
+        "allocation_pools":
+        [
+            {
+                "start": "172.24.4.226",
+                "end": "172.24.4.238"
+            }
+        ],
+        "host_routes": [],
+        "ip_version": 4,
+        "ipv6_address_mode": null,
+        "cidr": "172.24.4.224/28",
+        "id": "dc594048-a9e2-4ec9-9928-4157cea7e530",
+        "subnetpool_id": null
+    }
+]}
+'''
+
 @rest(GET, SUBNETS)
 def get_subnets(content, id):
     response_subnets = []
@@ -116,6 +267,23 @@ def get_subnets(content, id):
         response_subnets.append({'id': subnet['uuid'], 'name': subnet['fq_name'][0]})
     return json.dumps({"subnets": response_subnets})
 
+
+'''
+------
+DELETE
+------
+
+Query from ovirt engine:
+POST: http://<host>:<port – default:9696>/v2.0/[ports|subnets|networks]/<id of entity to delete>
+Headers: 
+ 	Accept=application/json 
+ 	X-Auth-Token=<token from authentication request>
+Body (with sample values):
+
+Minimal response from provider:
+Response code: 204
+Required headers: "Content-Type", "Application/json"
+'''
 
 @rest(DELETE, NETWORKS)
 def delete_network(content=None, id=None):
@@ -133,6 +301,14 @@ def delete_subnet(content, id):
     if id is not None:
         vnc().subnet_delete(id = id)
 
+
+'''
+--------------
+CREATE NETWORK
+--------------
+
+No specifics given in presentation.
+'''
 
 @rest(POST, NETWORKS)
 def post_networks(content, id):
@@ -171,6 +347,65 @@ def post_networks(content, id):
     return json.dumps({'network': network})
 
 
+'''
+-----------
+CREATE PORT
+-----------
+
+Query from ovirt engine:
+POST: http://<host>:<port – default:9696>/v2.0/ports
+Headers: 
+ 	Accept=application/json 
+ 	X-Auth-Token=<token from authentication request>
+Body (with sample values):
+{
+  "port" : {
+    "name" : "nic2",
+    "binding:host_id" : "192.168.120.18-1ebb72",
+    "admin_state_up" : true,
+    "device_id" : "7b2fa61c-2a88-424a-93b5-adc63328efe4",
+    "device_owner" : "oVirt",
+    "mac_address" : "00:1a:4a:16:01:53",
+    "network_id" : "bf864bf3-81d8-438d-bf68-4b0c357309b3",
+    "tenant_id" : "547deac3d7f64e2688de188365a139aa"
+  }
+}
+
+
+
+Minimal response from provider:
+Response code: 200
+Required headers: "Content-Type", "Application/json"
+Body (with sample values):
+{
+    "port":
+    {
+        "status": "DOWN",
+        "binding:host_id": "192.168.120.18-1ebb72",
+        "allowed_address_pairs": [],
+        "extra_dhcp_opts": [],
+        "device_owner": "oVirt",
+        "binding:profile": {},
+        "fixed_ips": [{
+            "subnet_id": "dc594048-a9e2-4ec9-9928-4157cea7e530",
+            "ip_address": "172.24.4.232"
+        }],
+        "id": "3c10bb5a-3d73-43a2-9c5a-9349d449e2a6",
+        "security_groups": ["9cca3bc4-416c-4815-b3d7-4ee81ab8bb97"],
+        "device_id": "7b2fa61c-2a88-424a-93b5-adc63328efe4",
+        "name": "nic2",
+        "admin_state_up": true,
+        "network_id": "bf864bf3-81d8-438d-bf68-4b0c357309b3",
+        "dns_name": "",
+        "binding:vif_details": {},
+        "binding:vnic_type": "normal",
+        "binding:vif_type": "binding_failed",
+        "tenant_id": "547deac3d7f64e2688de188365a139aa",
+        "mac_address": "00:1a:4a:16:01:53"
+    }
+}
+'''
+
 @rest(POST, PORTS)
 def post_ports(content, id):
     content_json = json.loads(content)
@@ -198,6 +433,55 @@ def post_ports(content, id):
     port['id'] = vnc().virtual_machine_interface_create(obj)
     return json.dumps({'port': port})
 
+
+'''
+-------------
+CREATE SUBNET
+-------------
+
+Query from ovirt engine:
+POST: http://<host>:<port – default:9696>/v2.0/subnets
+Headers: 
+ 	Accept=application/json 
+ 	X-Auth-Token=<token from authentication request>
+Body (with sample values):
+{
+  "subnet" : {
+    "name" : "public2",
+    "cidr" : "7.7.7.0/24",
+    "enable_dhcp" : true,
+    "network_id" : "bf864bf3-81d8-438d-bf68-4b0c357309b3",
+    "tenant_id" : "547deac3d7f64e2688de188365a139aa",
+    "dns_nameservers" : [ ],
+    "ip_version" : 4
+  }
+}
+
+
+Minimal response from provider:
+Response code: 200
+Required headers: "Content-Type", "Application/json"
+Body (with sample values):
+{
+    "subnet":
+    {
+        "name": "public2",
+        "enable_dhcp": true,
+        "network_id": "bf864bf3-81d8-438d-bf68-4b0c357309b3",
+        "tenant_id": "547deac3d7f64e2688de188365a139aa",
+        "dns_nameservers": [],
+        "gateway_ip": "7.7.7.1",
+        "ipv6_ra_mode": null,
+        "allocation_pools": [{"start": "7.7.7.2", "end": "7.7.7.254"}],
+        "host_routes": [],
+        "ip_version": 4,
+        "ipv6_address_mode": null,
+        "cidr": "7.7.7.0/24",
+        "id": "6ea2550b-960a-4988-97aa-892e8bbca52b",
+        "subnetpool_id": null
+    }
+}
+'''
 
 @rest(POST, SUBNETS)
 def post_subnets(content, id):
