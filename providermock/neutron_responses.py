@@ -100,7 +100,7 @@ NETWORKS LIST
 -------------
 
 Query from ovirt engine:
-GET: http://<host>:<port – default:9696>/v2.0/networks
+GET: http://<host>:<port - default:9696>/v2.0/networks
 Headers: 
  	Accept=application/json 
  	X-Auth-Token=<token from authentication request>
@@ -124,7 +124,7 @@ Body (with sample values):
             "id": "bf864bf3-81d8-438d-bf68-4b0c357309b3", 
             "provider:segmentation_id": 35
         },
- 	{ … }
+ 	{ ... }
 }
 '''
 
@@ -142,7 +142,7 @@ PORTS LIST
 ----------
 
 Query from ovirt engine:
-GET: http://<host>:<port – default:9696>/v2.0/ports
+GET: http://<host>:<port - default:9696>/v2.0/ports
 Headers: 
  	Accept=application/json 
  	X-Auth-Token=<token from authentication request>
@@ -202,7 +202,7 @@ SUBNETS LIST
 ------------
 
 Query from ovirt engine:
-GET: http://<host>:<port – default:9696>/v2.0/subnets
+GET: http://<host>:<port - default:9696>/v2.0/subnets
 Headers: 
  	Accept=application/json 
  	X-Auth-Token=<token from authentication request>
@@ -274,7 +274,7 @@ DELETE
 ------
 
 Query from ovirt engine:
-POST: http://<host>:<port – default:9696>/v2.0/[ports|subnets|networks]/<id of entity to delete>
+POST: http://<host>:<port - default:9696>/v2.0/[ports|subnets|networks]/<id of entity to delete>
 Headers: 
  	Accept=application/json 
  	X-Auth-Token=<token from authentication request>
@@ -370,7 +370,7 @@ CREATE PORT
 -----------
 
 Query from ovirt engine:
-POST: http://<host>:<port – default:9696>/v2.0/ports
+POST: http://<host>:<port - default:9696>/v2.0/ports
 Headers: 
  	Accept=application/json 
  	X-Auth-Token=<token from authentication request>
@@ -493,7 +493,7 @@ CREATE SUBNET
 -------------
 
 Query from ovirt engine:
-POST: http://<host>:<port – default:9696>/v2.0/subnets
+POST: http://<host>:<port - default:9696>/v2.0/subnets
 Headers: 
  	Accept=application/json 
  	X-Auth-Token=<token from authentication request>
