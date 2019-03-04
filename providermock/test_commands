@@ -1,37 +1,37 @@
 List networks:
-curl http://localhost:9696/v2.0/networks; echo
+curl http://localhost:9697/v2.0/networks; echo
 
 Show network:
-curl http://localhost:9696/v2.0/networks/375829ed-b091-41ef-a69d-e66052366a69; echo
+curl http://localhost:9697/v2.0/networks/375829ed-b091-41ef-a69d-e66052366a69; echo
 
 Add network:
-curl -g -i -X POST http://localhost:9696/v2.0/networks -H "Content-Type: application/json" -H "Accept: application/json" -d '{"network": {"name": "jeff"}}' ; echo
+curl -g -i -X POST http://localhost:9697/v2.0/networks -H "Content-Type: application/json" -H "Accept: application/json" -d '{"network": {"name": "jeff"}}' ; echo
 
 Delete network:
-curl -X DELETE http://localhost:9696/v2.0/networks/375829ed-b091-41ef-a69d-e66052366a69; echo
+curl -X DELETE http://localhost:9697/v2.0/networks/375829ed-b091-41ef-a69d-e66052366a69; echo
 
 
 List subnets:
-curl http://localhost:9696/v2.0/subnets; echo
+curl http://localhost:9697/v2.0/subnets; echo
 
 Show subnet:
-curl http://localhost:9696/v2.0/subnets/7ab03a45-7b06-485f-8748-282e248bcdd0; echo
+curl http://localhost:9697/v2.0/subnets/7ab03a45-7b06-485f-8748-282e248bcdd0; echo
 
 Add subnet:
-curl -g -i -X POST http://localhost:9696/v2.0/subnets -H "Content-Type: application/json" -H "Accept: application/json" -d '{"subnet": {"name": "jeff"}}' ; echo
+curl -g -i -X POST http://localhost:9697/v2.0/subnets -H "Content-Type: application/json" -H "Accept: application/json" -d '{"subnet": {"name": "jeff"}}' ; echo
 
 Delete subnet:
-curl -X DELETE http://localhost:9696/v2.0/subnets/7ab03a45-7b06-485f-8748-282e248bcdd0; echo
+curl -X DELETE http://localhost:9697/v2.0/subnets/7ab03a45-7b06-485f-8748-282e248bcdd0; echo
 
 
 List ports:
-curl http://localhost:9696/v2.0/ports; echo
+curl http://localhost:9697/v2.0/ports; echo
 
 Show port:
-curl http://localhost:9696/v2.0/ports/7ab03a45-7b06-485f-8748-282e248bcdd0; echo
+curl http://localhost:9697/v2.0/ports/7ab03a45-7b06-485f-8748-282e248bcdd0; echo
 
 Add port:
-curl -g -i -X POST http://localhost:9696/v2.0/ports -H "Content-Type: application/json" -H "Accept: application/json" -d '{"port": {"name": "jeff"}}' ; echo
+curl -g -i -X POST http://localhost:9697/v2.0/ports -H "Content-Type: application/json" -H "Accept: application/json" -d '{"port": {"name": "jeff"}}' ; echo
 
 Delete port:
-curl -X DELETE http://localhost:9696/v2.0/ports/7ab03a45-7b06-485f-8748-282e248bcdd0; echo
+curl -X DELETE http://localhost:9697/v2.0/ports/7ab03a45-7b06-485f-8748-282e248bcdd0; echo

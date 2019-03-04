@@ -31,10 +31,10 @@ def main():
     logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
     logging.info('Starting server')
 
-    server_keystone = HTTPServer(('', 35357), TokenHandler)
-    Thread(target=server_keystone.serve_forever).start()
+    #server_keystone = HTTPServer(('', 35357), TokenHandler)
+    #Thread(target=server_keystone.serve_forever).start()
 
-    server_neutron = HTTPServer(('', 9696), NeutronHandler)
+    server_neutron = HTTPServer(('localhost', 9697), NeutronHandler)
     Thread(target=server_neutron.serve_forever).start()
 
     print 'Press ctrl-c to exit'
@@ -46,7 +46,7 @@ def main():
 
     print 'Shutting down'
 
-    server_keystone.shutdown()
+    #server_keystone.shutdown()
     server_neutron.shutdown()
 
 

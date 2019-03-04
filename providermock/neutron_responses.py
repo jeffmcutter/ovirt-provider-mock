@@ -227,7 +227,7 @@ def post_subnets(content, id):
 @rest(PUT, PORTS)
 def put_ports(content, id):
     if not id:
-        raise Exception('No port id in POST request')
+        raise Exception('No port id in PUT request')
 
     content_json = json.loads(content)
 
