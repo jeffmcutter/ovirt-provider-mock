@@ -596,8 +596,7 @@ def put_ports(content, id):
 
     received_port = content_json['port']
 
-    port_id = get_id_from_path(path)
-    port = ports[port_id]
+    port = ports[id]
 
     # only copy the relevant keys, fail if any of them is missing
     #update_field_if_present(port, received_port, 'name')
@@ -609,7 +608,7 @@ def put_ports(content, id):
     #update_field_if_present(port, received_port, 'binding:host_id')
 
     print "PUT PORT:" + str(port)
-    # ports[port_id] = port
+    # ports[id] = port
     return json.dumps({'port': port})
 
 
