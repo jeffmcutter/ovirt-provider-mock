@@ -564,21 +564,20 @@ def post_subnets(content, id):
     received_subnet = content_json['subnet']
     subnet = dict()
 
-#    # generate some new id for the subnet
-#    subnet_id = 'subnet_id_' + generate_id()
-#
-#    # only copy the relevant keys, fail if any of them is missing
-#    subnet['id'] = subnet_id
+    # only copy the relevant keys, fail if any of them is missing
     subnet['name'] = received_subnet['name']
-#    subnet['network_id'] = received_subnet['network_id']
-#    subnet['cidr'] = received_subnet['cidr']
-#
-#    #update_field_if_present(subnet, received_subnet, 'ip_version')
-#    #update_field_if_present(subnet, received_subnet, 'gateway_ip')
-#    #update_field_if_present(subnet, received_subnet, 'dns_nameservers')
+    subnet['network_id'] = received_subnet['network_id']
+    subnet['cidr'] = received_subnet['cidr']
+
+    if 'ip_version' in received_subnet: subnet['ip_version'] = received_subnet['ip_version']
+    if 'gateway_ip' in received_subnet: subnet['gateway_ip'] = received_subnet['gateway_ip']
+    if 'dns_nameservers' in received_subnet: subnet['dns_nameservers'] = received_subnet['dns_nameservers']
 
     print "UPDATE SUBNET:" + str(subnet)
     obj = vnc_api.Subnet(subnet['name'])
+
+    ### Add vnc_api requirements to handle other key/value pairs in subnet dict here. ###
+
     subnet['id'] = vnc().subnet_create(obj)
     return json.dumps({'subnet': subnet})
 
