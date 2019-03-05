@@ -263,8 +263,33 @@ Body (with sample values):
 @rest(GET, SUBNETS)
 def get_subnets(content, id):
     response_subnets = []
-    for subnet in vnc().subnets_list()['subnets']:
-        response_subnets.append({'id': subnet['uuid'], 'name': subnet['fq_name'][0]})
+    for network in vnc().virtual_networks_list()['virtual-networks']:
+        net_obj = vnc().virtual_network_read(id = network['uuid'])
+        if hasattr(net_obj, 'network_ipam_refs') == False:
+          continue
+        for ipam_ref in net_obj.network_ipam_refs:
+            for subnet in ipam_ref['attr'].ipam_subnets:
+                allocation_pools = []
+                for ap in subnet.allocation_pools:
+                  allocation_pools.append({'start': ap.start, 'end': ap.end})
+                response_subnets.append(
+                    {
+                        'name': subnet.subnet_name,
+                        'enable_dhcp': subnet.enable_dhcp,
+                        'network_id': net_obj.uuid,
+                        'tenant_id': net_obj.parent_uuid,
+                        #'dns_nameservers': filter(lambda x: x.dhcp_option_name == '6', subnet['attr'].ipam_subnets[0].dhcp_option_list.dhcp_option)[0].dhcp_option_value.split(),
+                        'dns_nameservers': subnet.dns_nameservers,
+                        'gateway_ip': subnet.default_gateway,
+                        'ipv6_ra_mode': None,
+                        'allocation_pools': allocation_pools,
+                        'host_routes': [],
+                        'ip_version': 4,
+                        'ipv6_address_mode': None,
+                        'cidr': subnet.subnet.ip_prefix + '/' + str(subnet.subnet.ip_prefix_len),
+                        'id': subnet.subnet_uuid,
+                        'subnetpool_id': None
+                    })
     return json.dumps({"subnets": response_subnets})
 
 
