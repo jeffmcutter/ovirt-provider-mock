@@ -593,17 +593,37 @@ def post_subnets(content, id):
     subnet['name'] = received_subnet['name']
     subnet['network_id'] = received_subnet['network_id']
     subnet['cidr'] = received_subnet['cidr']
+    subnet['ip_version'] = received_subnet['ip_version']
+    subnet['enable_dhcp'] = received_subnet['enable_dhcp']
 
     if 'ip_version' in received_subnet: subnet['ip_version'] = received_subnet['ip_version']
     if 'gateway_ip' in received_subnet: subnet['gateway_ip'] = received_subnet['gateway_ip']
     if 'dns_nameservers' in received_subnet: subnet['dns_nameservers'] = received_subnet['dns_nameservers']
+    if 'tenant_id' in received_subnet: subnet['tenant_id'] = received_subnet['tenant_id']
 
     print "UPDATE SUBNET:" + str(subnet)
-    obj = vnc_api.Subnet(subnet['name'])
+
+    #project = vnc().project_read(fq_name = ['default-domain', 'default-project'])
+
+    #if subnet['enable_dhcp'] == True:
+    #    ipam_type = vnc_api.IpamType('dhcp')
+    #else:
+    #    ipam_type = vnc_api.IpamType('fixed')
+
+    #ipam = vnc_api.NetworkIpam('default-network-ipam', project, ipam_type)
+    #ipam = vnc().network_ipam_create(ipam)
+    #ipam = vnc().network_ipam_read(id = ipam)
+
+    ipam = vnc().network_ipam_read(fq_name = ['default-domain', 'default-project', 'default-network-ipam'])
+    network = vnc().virtual_network_read(id = subnet['network_id'])
+    subnet_ip, subnet_prefix = subnet['cidr'].split('/')
+    ipam_subnet = vnc_api.IpamSubnetType(subnet=vnc_api.SubnetType(subnet_ip, subnet_prefix))
+    network.add_network_ipam(ipam, vnc_api.VnSubnetsType([ipam_subnet]))
 
     ### Add vnc_api requirements to handle other key/value pairs in subnet dict here. ###
 
-    subnet['id'] = vnc().subnet_create(obj)
+    vnc().virtual_network_update(network)
+    subnet['id'] = 'TBD'
     return json.dumps({'subnet': subnet})
 
 
