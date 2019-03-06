@@ -325,7 +325,18 @@ def delete_port(content=None, id=None):
 @rest(DELETE, SUBNETS)
 def delete_subnet(content, id):
     if id is not None:
-        vnc().subnet_delete(id = id)
+        # TODO: This needs to be figured out.
+        # The following can remove the network_ipam:
+        #
+        # ipam = vnc().network_ipam_read(fq_name = ['default-domain', 'default-project', 'default-network-ipam'])
+        # network = vnc().virtual_network_read(id = subnet['network_id'])
+        # network.del_network_ipam(ipam)
+        # vnc().virtual_network_update(network)
+        #
+        # Need to locate that based on the subnet id.
+        # 
+
+        pass
 
 
 '''
