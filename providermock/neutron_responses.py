@@ -19,6 +19,7 @@ from __future__ import absolute_import
 
 import json
 import time
+import uuid
 
 #from neutron_data import networks
 #from neutron_data import ports
@@ -192,7 +193,7 @@ Body (with sample values):
 def get_ports(content, id):
     response_ports = []
     for port in vnc().virtual_machine_interfaces_list()['virtual-machine-interfaces']:
-        response_ports.append({'id': port['uuid'], 'name': port['fq_name'][2]})
+        response_ports.append({'id': port['uuid'], 'name': port['fq_name'][1]})
     return json.dumps({"ports": response_ports})
 
 
@@ -507,16 +508,27 @@ def post_ports(content, id):
 #    # only copy the relevant keys, fail if any of them is missing
 #    port['id'] = port_id
     port['name'] = received_port['name']  # vm nic name (eg. ens3)
-#    port['network_id'] = received_port['network_id']  # external network id
-#    port['device_id'] = received_port['device_id']  # vm nic id
-#    port['mac_address'] = received_port['mac_address']  # vm nic mac
-#    port['device_owner'] = received_port['device_owner']  # always 'oVirt'
-#    port['admin_state_up'] = received_port['admin_state_up']
-#    port['binding:host_id'] = received_port['binding:host_id']
+    port['network_id'] = received_port['network_id']  # external network id
+    port['device_id'] = received_port['device_id']  # vm nic id
+    port['mac_address'] = received_port['mac_address']  # vm nic mac
+    port['device_owner'] = received_port['device_owner']  # always 'oVirt'
+    port['admin_state_up'] = received_port['admin_state_up']
+    port['binding:host_id'] = received_port['binding:host_id']
 
     print "UPDATE PORT:" + str(port)
-    obj = vnc_api.VirtualMachineInterface(port['name'])
-    port['id'] = vnc().virtual_machine_interface_create(obj)
+    vm = vnc_api.VirtualMachine(str(uuid.uuid4()))
+    vm.uuid = vm.name
+    vnc().virtual_machine_create(vm)
+    id_perms = vnc_api.IdPermsType(enable=True)
+    port_obj = vnc_api.VirtualMachineInterface(str(uuid.uuid4()), vm, id_perms=id_perms)
+    port_obj.uuid = port_obj.name
+    network = vnc().virtual_network_read(id = port['network_id'])
+    port_obj.set_virtual_network(network)
+
+    ### Add vnc_api requirements to handle other key/value pairs in port dict here. ###
+
+    port['id'] = vnc().virtual_machine_interface_create(port_obj)
+
     return json.dumps({'port': port})
 
 
