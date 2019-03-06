@@ -278,6 +278,7 @@ def get_subnets(content, id):
                         'enable_dhcp': subnet.enable_dhcp,
                         'network_id': net_obj.uuid,
                         'tenant_id': net_obj.parent_uuid,
+                        # TODO: dns_nameservers doesn't show right stuff, but also probably not getting set right when created.
                         #'dns_nameservers': filter(lambda x: x.dhcp_option_name == '6', subnet['attr'].ipam_subnets[0].dhcp_option_list.dhcp_option)[0].dhcp_option_value.split(),
                         'dns_nameservers': subnet.dns_nameservers,
                         'gateway_ip': subnet.default_gateway,
@@ -616,6 +617,7 @@ def post_subnets(content, id):
 
     # TODO: This successfully adds this ipam_subnet to the network,
     # but in doing so it overwrites any existing subnets.
+    # TODO: Name is not set.  Via Contrails UI it ends up being the UUID.
 
     ipam = vnc().network_ipam_read(fq_name = ['default-domain', 'default-project', 'default-network-ipam'])
     network = vnc().virtual_network_read(id = subnet['network_id'])
@@ -626,6 +628,10 @@ def post_subnets(content, id):
     ### Add vnc_api requirements to handle other key/value pairs in subnet dict here. ###
 
     vnc().virtual_network_update(network)
+
+    #TODO: Collect the subnet_id.  Need to re-read network to get updated ID but it's buried in an array of multiple ipam_subnets.
+    #network = vnc().virtual_network_read(id = subnet['network_id'])
+    #subnet['id'] = network.network_ipam_refs['attr'] filter
     subnet['id'] = 'TBD'
     return json.dumps({'subnet': subnet})
 
