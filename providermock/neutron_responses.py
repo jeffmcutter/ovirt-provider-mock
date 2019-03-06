@@ -614,6 +614,9 @@ def post_subnets(content, id):
     #ipam = vnc().network_ipam_create(ipam)
     #ipam = vnc().network_ipam_read(id = ipam)
 
+    # TODO: This successfully adds this ipam_subnet to the network,
+    # but in doing so it overwrites any existing subnets.
+
     ipam = vnc().network_ipam_read(fq_name = ['default-domain', 'default-project', 'default-network-ipam'])
     network = vnc().virtual_network_read(id = subnet['network_id'])
     subnet_ip, subnet_prefix = subnet['cidr'].split('/')
