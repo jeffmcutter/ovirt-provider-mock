@@ -133,7 +133,12 @@ Body (with sample values):
 def get_networks(content, id):
     response_networks = []
     for network in vnc().virtual_networks_list()['virtual-networks']:
-        response_networks.append({'id': network['uuid'], 'name': network['fq_name'][2]})
+        # TODO: Additional fields may be required here.  Documentation wasn't clear.
+        response_networks.append(
+            {
+                'id': network['uuid'],
+                'name': network['fq_name'][2]
+            })
     return json.dumps({"networks": response_networks})
 
 
@@ -193,7 +198,12 @@ Body (with sample values):
 def get_ports(content, id):
     response_ports = []
     for port in vnc().virtual_machine_interfaces_list()['virtual-machine-interfaces']:
-        response_ports.append({'id': port['uuid'], 'name': port['fq_name'][1]})
+        # TODO: Additional fields are needed as described in the Minimal response from provider above.
+        response_ports.append(
+            {
+                'id': port['uuid'],
+                'name': port['fq_name'][1]
+            })
     return json.dumps({"ports": response_ports})
 
 
@@ -272,7 +282,9 @@ def get_subnets(content, id):
             for subnet in ipam_ref['attr'].ipam_subnets:
                 allocation_pools = []
                 for ap in subnet.allocation_pools:
-                  allocation_pools.append({'start': ap.start, 'end': ap.end})
+                    allocation_pools.append({'start': ap.start, 'end': ap.end})
+                # TODO: Some of these fields are currently hard coded.
+                # Results need to be verified.
                 response_subnets.append(
                     {
                         'name': subnet.subnet_name,
@@ -321,6 +333,7 @@ def delete_network(content=None, id=None):
 @rest(DELETE, PORTS)
 def delete_port(content=None, id=None):
     if id is not None:
+      # TODO: Maybe use ID of VM to track.
         vnc().virtual_machine_interface_delete(id = id)
 
 @rest(DELETE, SUBNETS)
@@ -392,7 +405,7 @@ def post_networks(content, id):
     print "UPDATE NETWORK:" + str(network)
     obj = vnc_api.VirtualNetwork(network['name'])
 
-    ### Add vnc_api requirements to handle other key/value pairs in network dict here. ###
+    # TODO: Add vnc_api requirements to handle other key/value pairs in network dict here.
 
     network['id'] = vnc().virtual_network_create(obj)
     return json.dumps({'network': network})
@@ -516,6 +529,8 @@ def post_ports(content, id):
     port['binding:host_id'] = received_port['binding:host_id']
 
     print "UPDATE PORT:" + str(port)
+
+    # TODO: This creates a subnet, but not correctly.  vnc_api call details not quite right.
     vm = vnc_api.VirtualMachine(str(uuid.uuid4()))
     vm.uuid = vm.name
     vnc().virtual_machine_create(vm)
@@ -525,7 +540,7 @@ def post_ports(content, id):
     network = vnc().virtual_network_read(id = port['network_id'])
     port_obj.set_virtual_network(network)
 
-    ### Add vnc_api requirements to handle other key/value pairs in port dict here. ###
+    # TODO: Add vnc_api requirements to handle other key/value pairs in port dict here.
 
     port['id'] = vnc().virtual_machine_interface_create(port_obj)
 
@@ -642,13 +657,14 @@ def post_subnets(content, id):
     # but in doing so it overwrites any existing subnets.
     # TODO: Name is not set.  Via Contrails UI it ends up being the UUID.
 
+    # TODO: This creates a port, but not correctly.  vnc_api call details not quite right.
     ipam = vnc().network_ipam_read(fq_name = ['default-domain', 'default-project', 'default-network-ipam'])
     network = vnc().virtual_network_read(id = subnet['network_id'])
     subnet_ip, subnet_prefix = subnet['cidr'].split('/')
     ipam_subnet = vnc_api.IpamSubnetType(subnet=vnc_api.SubnetType(subnet_ip, subnet_prefix))
     network.add_network_ipam(ipam, vnc_api.VnSubnetsType([ipam_subnet]))
 
-    ### Add vnc_api requirements to handle other key/value pairs in subnet dict here. ###
+    #TODO: Add vnc_api requirements to handle other key/value pairs in subnet dict here.
 
     vnc().virtual_network_update(network)
 
@@ -678,6 +694,8 @@ def put_ports(content, id):
     #update_field_if_present(port, received_port, 'device_owner')
     #update_field_if_present(port, received_port, 'admin_state_up')
     #update_field_if_present(port, received_port, 'binding:host_id')
+
+    # TODO: Determine if this is needed.
 
     print "PUT PORT:" + str(port)
     # ports[id] = port
